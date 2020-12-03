@@ -2,59 +2,19 @@
 const options = {
   url: 'https://dev69821.service-now.com/',
   username: 'admin',
-  password: 'Tonkabutt1!',
-  serviceNowTable: 'change_request'
+  password: 'Tonkabutt1!'
 };
 
-/////////////////////////////  NEW code start
-// Import built-in Node.js package path.
-const path = require('path');
 
-/**
- * Import the ServiceNowConnector class from local Node.js module connector.js.
- *   and assign it to constant ServiceNowConnector.
- * When importing local modules, IAP requires an absolute file reference.
- * Built-in module path's join method constructs the absolute filename.
- */
-const ServiceNowConnector = require(path.join(__dirname, './connector.js'));
-
-/**
- * @function mainOnObject
- * @description Instantiates an object from the imported ServiceNowConnector class
- *   and tests the object's get and post methods.
- */
-function mainOnObject() {
-  // Instantiate an object from class ServiceNowConnector.
-  const connector = new ServiceNowConnector(options);
-  // Test the object's get and post methods.
-  // You must write the arguments for get and post.
-  console.error('main.js start');
-  connector.get(callback);
-  /////connector.post();
-
-}
-
-// Call mainOnObject to run it.
-mainOnObject();
-/////////////////////////////  NEW code end
-
-
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
 /**
  * Import the Node.js request package.
  * See https://www.npmjs.com/package/request
  */
-////const request = require('request');
+const request = require('request');
 
 
 // We'll use this regular expression to verify REST API's HTTP response status code.
-////const validResponseRegex = /(2\d\d)/;
+const validResponseRegex = /(2\d\d)/;
 
 
 /**
@@ -81,8 +41,6 @@ mainOnObject();
  *
  * @return {string} ServiceNow URL
  */
-
-/*
 function constructUri(serviceNowTable, query = null) {
   let uri = `/api/now/table/${serviceNowTable}`;
   if (query) {
@@ -101,8 +59,6 @@ function constructUri(serviceNowTable, query = null) {
  *
  * @return {boolean} Returns true if instance is hibernating. Otherwise returns false.
  */
-
- /*
 function isHibernating(response) {
   return response.body.includes('Instance Hibernating page')
   && response.body.includes('<html>')
@@ -124,8 +80,6 @@ function isHibernating(response) {
  *   Will be HTML text if hibernating instance.
  * @param {error} callback.error - The error property of callback.
  */
-
- /*
 function processRequestResults(error, response, body, callback) {
     if (error) {
       console.error('Error present.');
@@ -157,8 +111,6 @@ function processRequestResults(error, response, body, callback) {
  *   Will be HTML text if hibernating instance.
  * @param {error} callback.error - The error property of callback.
  */
-
- /*
 function sendRequest(callOptions, callback) {
   // Initialize return arguments for callback
   let uri;
@@ -194,8 +146,6 @@ function sendRequest(callOptions, callback) {
  *   Will be HTML text if hibernating instance.
  * @param {error} callback.error - The error property of callback.
  */
-
- /*
 function get(callOptions, callback) {
   callOptions.method = 'GET';
   callOptions.query = 'sysparm_limit=1';
@@ -215,8 +165,6 @@ function get(callOptions, callback) {
  *   Will be HTML text if hibernating instance.
  * @param {error} callback.error - The error property of callback.
  */
-
- /*
 function post(callOptions, callback) {
   callOptions.method = 'POST';
   sendRequest(callOptions, (results, error) => callback(results, error));
@@ -227,8 +175,6 @@ function post(callOptions, callback) {
  * @function main
  * @description Tests get() and post() functions.
  */
-
- /*
 function main() {
   get({ serviceNowTable: 'change_request' }, (data, error) => {
     if (error) {
@@ -248,6 +194,3 @@ function main() {
 
 // Call main to run it.
 main();
-
-
-*/
