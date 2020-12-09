@@ -43,10 +43,20 @@ function mainOnObject() {
 
 
   // Test the object's get and post methods.
-  // You must write the arguments for get and post.
-  console.error('main.js start');
-  connector.get(callback);
-  /////connector.post();
+  connector.get((data, error) => {
+    if (error) {
+      console.error(`\nError returned from GET request:\n${JSON.stringify(error)}`);
+    }
+    else
+        console.log(`\nResponse returned from GET request:\n${JSON.stringify(data)}`)
+  });
+  connector.post((data, error) => {
+    if (error) {
+      console.error(`\nError returned from POST request:\n${JSON.stringify(error)}`);
+    }
+    else
+        console.log(`\nResponse returned from POST request:\n${JSON.stringify(data)}`)
+  });
 
 }
 
