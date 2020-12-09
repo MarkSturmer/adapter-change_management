@@ -55,14 +55,33 @@ class ServiceNowConnector {
    *   Will be HTML text if hibernating instance.
    * @param {error} callback.error - The error property of callback.
    */
-  get(callback) {
-    console.error('start inside GET method');  
+  get(callback) {  
     let getCallOptions = { ...this.options };
     getCallOptions.method = 'GET';
     getCallOptions.query = 'sysparm_limit=1';
-    console.error(' ** inside GET method - getCallOptions= ' + JSON.stringify(getCallOptions));
     this.sendRequest(getCallOptions, (results, error) => callback(results, error));
   }
+
+  /**
+   * @memberof ServiceNowConnector
+   * @method post
+   * @summary Calls ServiceNow POST API
+   * @description Call the ServiceNow GET POST.Sets the API call's method and query,
+   *   then calls this.sendRequest().
+   *
+   * @param {iapCallback} callback - Callback a function.
+   * @param {(object|string)} callback.data - The API's response. Will be an object if sunnyday path.
+   *   Will be HTML text if hibernating instance.
+   * @param {error} callback.error - The error property of callback.
+   */
+   post(callback) { 
+       let getCallOptions = { ...this.options };
+       getCallOptions.method = 'POST';
+       this.sendRequest(getCallOptions, (results, error) => callback(results, error));
+   };
+
+
+
 
   /**
    * @memberof ServiceNowConnector
@@ -75,21 +94,13 @@ class ServiceNowConnector {
    * @param {string} [query] - Optional URL query string.
    *  
    * @return {string} ServiceNow URL
-   */
-
-  //constructUri  () {
-  //    console.error('entering constructUri');
-  //}  
-   
+   */  
   constructUri(inCallOptions, respUri) {
-      console.error('entering constructUri');
-      console.error('  **  in constructUri  the passed in inCallOptions = ' + JSON.stringify(inCallOptions));
       let uri = '/api/now/table/' + inCallOptions.serviceNowTable;
       let query = inCallOptions.query
       if(query) {
           uri = uri + '?' + query;
       }
-      console.error('  ** ** in constructUri return uri value = ' + uri );
       return uri;
   }
 
@@ -105,23 +116,6 @@ class ServiceNowConnector {
    */
    
 isHibernating(inResponse) {
-    console.error('entering isHibernating');
-    if(inResponse.body.includes('Instance Hibernating page')) {
-        console.error('RESPONSE CONTAINS HIBERNATING');
-    } else {
-        console.error('RESPONSE not HIBERNATING');
-    }
-    if(inResponse.body.includes('<html>')) {
-        console.error('RESPONSE CONTAINS HTML tag');
-    } else {
-        console.error('RESPONSE no html tag');
-    }
-    if(inResponse.statusCode === 200) {
-        console.error('RESPONSE CODE is 200');
-    } else {
-        console.error('RESPONSE code not 200');
-    }
-    console.error('+++++++++++  response parsed is :' + JSON.stringify(inResponse));
     return inResponse.body.includes('Instance Hibernating page')
         && inResponse.body.includes('<html>')
         && inResponse.statusCode === 200;
@@ -145,13 +139,7 @@ isHibernating(inResponse) {
  */
 
  
-//processRequestResults(callback) {
 processRequestResults(error, response, body, callback) {  
-    console.error('ENTERING processRequestResults method');
-    console.error('  *****  processRequestResults method in error value = '+ JSON.stringify(error));
-    console.error('  *****  processRequestResults method in response value = '+ JSON.stringify(response)); 
-    console.error('  *****  processRequestResults method in body value = '+ JSON.stringify(body)); 
-    console.error('  *****  processRequestResults method in callback value = '+ JSON.stringify(callback));
     if (error) {
       console.error('Error present.');
       callback.error = error;
@@ -187,19 +175,7 @@ processRequestResults(error, response, body, callback) {
 
  
 sendRequest( inData, callback) {
-    console.error('entering sendRequest method');
-    console.error(' ** sendRequest method - inData = '+ JSON.stringify(inData));
     let uri;
-    let getCallOptions = { ...this.options };
-    console.error(' ** sendRequest method - getCallOptions = '+ JSON.stringify(getCallOptions));
-    let tmp1 = inData.method;
-    let tmp2 = inData.username;
-    let tmp3 = inData.password;
-    let tmp4 = inData.url;
-    console.error('tmp1 = ' + tmp1);
-    console.error('tmp2 = ' + tmp2);
-    console.error('tmp3 = ' + tmp3);
-    console.error('tmp4 = ' + tmp4);    
 
     const requestOptions = {
         method: inData.method,
@@ -209,12 +185,8 @@ sendRequest( inData, callback) {
         },
         baseUrl: inData.url,
         uri: this.constructUri(inData)
-        //uri: thisUri,
     };
-    console.error(' ** sendRequest method - requestOptions = '+ JSON.stringify(requestOptions));
 
-
-console.error('About to perform request');
     request(requestOptions, (error, response, body) => {
     this.processRequestResults(error, response, body, (processedResults, processedError) => callback(processedResults, processedError));
   });
