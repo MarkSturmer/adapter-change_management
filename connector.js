@@ -148,7 +148,7 @@ processRequestResults(error, response, body, callback) {
       callback.error = response;
     } else if (this.isHibernating(response)) {
       callback.error = 'Service Now instance is hibernating';
-      console.error(callbackError);
+      console.error(callback.error);
     } else {
       callback.data = response;
     }
