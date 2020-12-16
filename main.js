@@ -114,13 +114,11 @@ class ServiceNowAdapter extends EventEmitter {
             * healthcheck(), execute it passing the error seen as an argument
             * for the callback's errorMessage parameter.
             */
-            if(callback.length>0){
-                callback(null,this.emitOnline());
-            }
-            else {
                 this.emitOffline();
-            }    
-        } else {
+//                if (callback){
+//                    callback(result.error);
+//                }   
+         } else {
             /**
             * Write this block.
             * If no runtime problems were detected, emit ONLINE.
@@ -131,13 +129,14 @@ class ServiceNowAdapter extends EventEmitter {
             * parameter as an argument for the callback function's
             * responseData parameter.
             */
-            if(callback.length>0){
-                callback(this.emitOnline(),null);
-            }
-            else{
                 this.emitOnline();
-            }
+ //               if (callback){
+ //                   callback(result.error);
+ //               }
         }
+                if (callback){
+                    callback(result.error);
+                }
     });
     }
 
@@ -194,17 +193,58 @@ class ServiceNowAdapter extends EventEmitter {
      * Note how the object was instantiated in the constructor().
      * get() takes a callback function.
      */
+///////////////////
+    this.connector.get((data, error) => {
+        let  respArray = [];
+        if (error) {
+            console.error(`\nError returned from GET request:\n${JSON.stringify(error)}`);
+            callback(data,error)
+        }
+        else {
+            console.log(`\nResponse returned from GET request:\n${JSON.stringify(data)}`);
+            if(data.body){
+                let respBody = JSON.parse(data.body);
+                respBody.result.forEach((chngRec) => {
+                    let filterChgTckt = {
+                        change_ticket_number: chngRec.number,
+                        active: chngRec.active,
+                        priority: chngRec.priority,
+                        description: chngRec.description,
+                        work_start: chngRec.work_start,
+                        work_end: chngRec.work_end,
+                        change_ticket_key: chngRec.sys_id,
+                        };
+                     respArray.push(filterChgTckt);  
+                    }   
+                ); 
+            }
+            else {
+                console.log(`\nERROR-SuccessResponse but no body object was returned:\n${JSON.stringify(data)}`);
+                error = 'ERROR-SuccessResponse but no body object was returned:';
+            }
+            callback(respArray,error);
+        }
+
+     //////////////////////////////
+     /*
      this.connector.get((data, error) => {
         if (error) {
             console.error(`\nError returned from GET request:\n${JSON.stringify(error)}`);
         }
         else{
             console.log(`\nResponse returned from GET request:\n${JSON.stringify(data)}`);
-            transfornResponse(data);
+            transformResponse(data);
         }
            
     });
+    */
+    /////////////////
+    });
   }
+
+
+
+
   /**
    * @typedef {Object} changeRec
    * @property {string} change_ticket_number - unique number displayed for the changeRecord dispalyed publically as change_ticket_number
@@ -230,6 +270,7 @@ class ServiceNowAdapter extends EventEmitter {
    * @param {object} inData - the successful response of a getRecords call.  The incoming data to be mapped into the generice response object.
    * @returns {Array.<Object>} - array of changeRec objects, each containing one change record returned by the getRecord call
    */
+   /*
    transformResponse(inData) {
        let changeRecs = [];
        if(data.body){
@@ -254,6 +295,7 @@ class ServiceNowAdapter extends EventEmitter {
         }
        return changeRecs;
    }
+   */
 
   /**
    * @method formatChangeRequest
@@ -300,13 +342,13 @@ class ServiceNowAdapter extends EventEmitter {
                 let postRespBody = JSON.parse(data.body);
                 let chgTckt = postRespBody.result;
                 let changeRec = {
-                    changeTicketNum: chgTckt.number,
+                    change_ticket_number: chgTckt.number,
                     active: chgTckt.active,
                     priority: chgTckt.priority,
                     description: chgTckt.description,
                     workStart: chgTckt.work_start,
                     workEnd: chgTckt.work_end,
-                    chgTicketKey: chgTckt.sys_id,
+                    change_ticket_key: chgTckt.sys_id,
                 };
                 //let changeRec = formatChangeRequest(chgTckt);
                 callback(changeRec,error);
