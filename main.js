@@ -115,9 +115,7 @@ class ServiceNowAdapter extends EventEmitter {
             * for the callback's errorMessage parameter.
             */
                 this.emitOffline();
-//                if (callback){
-//                    callback(result.error);
-//                }   
+ 
          } else {
             /**
             * Write this block.
@@ -130,12 +128,9 @@ class ServiceNowAdapter extends EventEmitter {
             * responseData parameter.
             */
                 this.emitOnline();
- //               if (callback){
- //                   callback(result.error);
- //               }
         }
                 if (callback){
-                    callback(result.error);
+                    callback(result, error);
                 }
     });
     }
@@ -193,15 +188,17 @@ class ServiceNowAdapter extends EventEmitter {
      * Note how the object was instantiated in the constructor().
      * get() takes a callback function.
      */
-///////////////////
+
     this.connector.get((data, error) => {
         let  respArray = [];
         if (error) {
-            console.error(`\nError returned from GET request:\n${JSON.stringify(error)}`);
+            //console.error(`\nError returned from GET request:\n${JSON.stringify(error)}`);
+            log.debug('\n****************Error returned from GET request:\n${JSON.stringify(error)}');
             callback(data,error)
         }
         else {
-            console.log(`\nResponse returned from GET request:\n${JSON.stringify(data)}`);
+            //console.log(`\nResponse returned from GET request:\n${JSON.stringify(data)}`);
+            log.debug('\n****************Response returned from GET request:\n${JSON.stringify(data)}');
             if(data.body){
                 let respBody = JSON.parse(data.body);
                 respBody.result.forEach((chngRec) => {
@@ -219,26 +216,11 @@ class ServiceNowAdapter extends EventEmitter {
                 ); 
             }
             else {
-                console.log(`\nERROR-SuccessResponse but no body object was returned:\n${JSON.stringify(data)}`);
+                //console.log(`\nERROR-SuccessResponse but no body object was returned:\n${JSON.stringify(data)}`);
                 error = 'ERROR-SuccessResponse but no body object was returned:';
             }
             callback(respArray,error);
         }
-
-     //////////////////////////////
-     /*
-     this.connector.get((data, error) => {
-        if (error) {
-            console.error(`\nError returned from GET request:\n${JSON.stringify(error)}`);
-        }
-        else{
-            console.log(`\nResponse returned from GET request:\n${JSON.stringify(data)}`);
-            transformResponse(data);
-        }
-           
-    });
-    */
-    /////////////////
     });
   }
 
@@ -255,65 +237,6 @@ class ServiceNowAdapter extends EventEmitter {
    * @property {string} workEnd - The date and time when work on the ticket completed in format: YYYY-MM-DD HH:MM TZ.
    * @property {string} change_ticket_key - The ticket record's unique key.
    */
-
-
-  /**
-   * @memberof ServiceNowAdapter
-   * @method transformResponse
-   * @summary Transform GetRecord response to standard/generic fields/names
-   * @description GetRecord returns more data and the fields are not the generic
-   * field names that the applivcation is ready for.  This method filters out the data wanted 
-   * and maps it to generic/standard field names.  Fields mapped include: number to change_ticket_number,
-   * active to active, priority to priority, description to description, work_start
-   * to work_start, work_end to work_end, and sys_id to change_ticket_key.
-   *
-   * @param {object} inData - the successful response of a getRecords call.  The incoming data to be mapped into the generice response object.
-   * @returns {Array.<Object>} - array of changeRec objects, each containing one change record returned by the getRecord call
-   */
-   /*
-   transformResponse(inData) {
-       let changeRecs = [];
-       if(data.body){
-           let respBody = JSON.parse(inData.body);
-           respBody.result.forEach((chgRec) => {
-               let formattedTicket = {
-                   changeTicketNum: chgRec.number,
-                   active: chgRec.active,
-                   priority: chgRec.priority,
-                   description: chgRec.description,
-                   workStart: chgRec.work_start,
-                   workEnd: chgRec.work_end,
-                   chgTicketKey: chgRec.sys_id,
-               };
-               // let formattedTicket = formatChangeRequest(chgRec);
-               changeRecs.push(formattedTicket);
-           });
-       }
-        else {
-                let errMsg = "no body tag found in Get response";
-                callback(null,errMsg);
-        }
-       return changeRecs;
-   }
-   */
-
-  /**
-   * @method formatChangeRequest
-   * @summary common code to create a JSON object of the changeRequest record
-   */
-  formatChangeRequest(inChangeRec) {
-
-      let formattedTicket = {
-            change_ticket_number: inChangeRec.number,
-            active: inChangeRec.active,
-            priority: inChangeRec.priority,
-            description: inChangeRec.description,
-            workStart: inChangeRec.work_start,
-            workEnd: inChangeRec.work_end,
-            change_ticket_key: inChangeRec.sys_id,
-        };
-        return formattedTicket;
-  }
 
   /**
    * @memberof ServiceNowAdapter
@@ -333,11 +256,11 @@ class ServiceNowAdapter extends EventEmitter {
      */
      this.connector.post((data, error) => {
         if (error) {
-            console.error(`\nError returned from POST request:\n${JSON.stringify(error)}`);
+            //console.error(`\nError returned from POST request:\n${JSON.stringify(error)}`);
             callback(data,error);
         }
         else {
-            console.log(`\nResponse returned from POST request:\n${JSON.stringify(data)}`);
+            //console.log(`\nResponse returned from POST request:\n${JSON.stringify(data)}`);
             if(data.body) {
                 let postRespBody = JSON.parse(data.body);
                 let chgTckt = postRespBody.result;
@@ -350,7 +273,6 @@ class ServiceNowAdapter extends EventEmitter {
                     workEnd: chgTckt.work_end,
                     change_ticket_key: chgTckt.sys_id,
                 };
-                //let changeRec = formatChangeRequest(chgTckt);
                 callback(changeRec,error);
             }
             else {

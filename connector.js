@@ -95,9 +95,19 @@ class ServiceNowConnector {
    *  
    * @return {string} ServiceNow URL
    */  
+ /*
   constructUri(inCallOptions, respUri) {
       let uri = '/api/now/table/' + inCallOptions.serviceNowTable;
       let query = inCallOptions.query
+      if(query) {
+          uri = uri + '?' + query;
+      }
+      return uri;
+  }
+  */
+
+    constructUri(inCallOptions, query =  null) {
+      let uri = '/api/now/table/' + inCallOptions.serviceNowTable;
       if(query) {
           uri = uri + '?' + query;
       }
@@ -177,6 +187,11 @@ processRequestResults(error, response, body, callback) {
 sendRequest( inData, callback) {
     let uri;
 
+     if (getCallOptions.query)
+        uri = this.constructUri(inData.serviceNowTable, inData.query);
+    else
+        uri = this.constructUri(inData.serviceNowTable);
+
     const requestOptions = {
         method: inData.method,
         auth: {
@@ -184,7 +199,7 @@ sendRequest( inData, callback) {
             pass: inData.password,
         },
         baseUrl: inData.url,
-        uri: this.constructUri(inData)
+        uri: uri
     };
 
     request(requestOptions, (error, response, body) => {
